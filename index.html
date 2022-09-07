@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <section class="tools-board">
+            <div class="row">
+                <label class="title">Shapes</label>
+                <ul class="options">
+                    <li class="option tool" id="rect">
+                        <img src="icons/rectangle.svg" draggable="false" alt="rectangle">
+                        <span>Rectangle</span>
+                    </li>
+                    <li class="option tool" id="circle">
+                        <img src="icons/circle.svg" draggable="false" alt="circle.svg">
+                        <span>Circle</span>
+                    </li>
+                    <li class="option tool" id="triangle">
+                        <img src="icons/triangle.svg" draggable="false" alt="triangle.svg">
+                        <span>Triangle</span>
+                    </li>
+                    <li class="option">
+                        <input type="checkbox" id="fill-color">
+                        <label for="fill-color">Fill color</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <label class="title">Options</label>
+                <ul class="options">
+                    <li class="option tool active" id="brush">
+                        <img src="icons/brush.svg" draggable="false" alt="brush.svg">
+                        <span>Brush</span>
+                    </li>
+                    <li class="option tool" id="eraser">
+                        <img src="icons/eraser.svg" draggable="false" alt="eraser.svg">
+                        <span>Eraser</span>
+                    </li>
+                    <li class="option">
+                        <input type="range" id="size-slider" min="1" max="30" value="5">
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <label class="title">Colors</label>
+                <ul class="options colors">
+                    <li class="option"></li>
+                    <li class="option selected"></li>
+                    <li class="option"></li>
+                    <li class="option"></li>
+                    <li class="option">
+                        <input type="color"  id="color-picker">
+                    </li>
+                </ul>
+            </div>
+            <div class="row buttons">
+                <button class="clear-canvas">Clear Canvas</button>
+                <button class="save-img">Save image as</button>
+            </div>
+        </section>
+        <section class="drawing-board">
+            <canvas></canvas>
+        </section>
+    </div>
+    <style>
+        @import 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap';
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: poppins, sans-serif
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #212121;
+            min-height: 100vh
+        }
+
+        .container {
+            gap: 15px;
+            padding: 10px;
+            width: 100%;
+            display: flex;
+            max-width: 1050px
+        }
+
+        section {
+            border-radius: 7px;
+            background: rgb(0, 0, 0);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .1)
+        }
+
+        .tools-board {
+            width: 210px;
+            padding: 15px 22px 0
+        }
+
+        .tools-board .row {
+            margin-bottom: 20px
+        }
+
+        .row .title {
+            color: rgb(255, 255, 255);
+            font-size: 1rem
+        }
+
+        .row .options {
+            list-style: none;
+            margin: 10px 0 0 5px
+        }
+
+        .row .options .option {
+            display: flex;
+            user-select: none;
+            cursor: pointer;
+            align-items: center;
+            margin-bottom: 10px
+        }
+
+        .row .options .option img {
+            width: 17px
+        }
+
+        .option:is(:hover, .active) img {
+            filter: invert(17%) sepia(90%) saturate(3000%) hue-rotate(900deg) brightness(100%) contrast(100%)
+        }
+
+        .option :where(span, label) {
+            color: #5a6168;
+            cursor: pointer;
+            padding-left: 10px
+        }
+
+        .option:is(:hover, .active) :where(span, label) {
+            color: #4a98f7
+        }
+
+        .option #fill-color {
+            height: 15px;
+            width: 15px;
+            cursor: pointer
+        }
+
+        #fill-color:checked~label {
+            color: #4a98f7
+        }
+
+        .option #size-slider {
+            width: 100%;
+            height: 5px;
+            margin-top: 10px
+        }
+
+        .tools-board .colors {
+            display: flex;
+            justify-content: space-between
+        }
+
+        .colors .option {
+            position: relative;
+            height: 20px;
+            width: 20px;
+            margin-top: 3px;
+            border-radius: 50%
+        }
+
+        .colors .option:nth-child(1) {
+            background-color: #fff;
+            border: 1px solid #bfbfbf
+        }
+
+        .colors .option:nth-child(2) {
+            background-color: #000
+        }
+
+        .colors .option:nth-child(3) {
+            background-color: #e02020
+        }
+
+        .colors .option:nth-child(4) {
+            background-color: #6dd400
+        }
+
+        .colors .option:nth-child(5) {
+            background-image: url(./icons/brush.svg);
+            background-repeat: no-repeat;
+        }
+
+        .colors .option.selected:before {
+            content: "";
+            top: 50%;
+            left: 50%;
+            height: 12px;
+            width: 12px;
+            background: inherit;
+            position: absolute;
+            border: 2px solid #fff;
+            border-radius: inherit;
+            transform: translate(-50%, -50%)
+        }
+
+        .colors .option:first-child.selected:before {
+            border-color: #ccc
+        }
+
+        .colors #color-picker {
+            opacity: 0;
+            cursor: pointer
+        }
+
+        .buttons button {
+            width: 100%;
+            color: #fff;
+            border: none;
+            outline: none;
+            padding: 11px 0;
+            font-size: .9rem;
+            background: 0 0;
+            border-radius: 4px;
+            margin-bottom: 13px;
+            cursor: pointer;
+            transition: all .3s ease
+        }
+
+        .buttons .clear-canvas {
+            color: #6c757d;
+            border: 1px solid #6c757d
+        }
+
+        .buttons .clear-canvas:hover {
+            color: #fff;
+            background: #6c757d
+        }
+
+        .buttons .save-img {
+            margin-bottom: 8px;
+            background: #4a98f7;
+            border: 1px solid #4a98f7
+        }
+
+        .buttons .save-img:hover {
+            background: #2382f6
+        }
+
+        .drawing-board {
+            flex: 1;
+            overflow: hidden;
+            background: #6c757d
+        }
+
+        .drawing-board canvas {
+            width: 100%;
+            height: 100%;
+            background: #6c757d
+            
+        }
+
+        @media screen and (max-width:500px) {
+            body {
+                align-items: flex-start
+            }
+
+            .container {
+                gap: 10px;
+                flex-wrap: wrap-reverse
+            }
+
+            .tools-board {
+                width: 100%;
+                padding: 15px 20px 10px
+            }
+
+            .tools-board .row {
+                margin-bottom: 10px
+            }
+
+            .row .options .option img {
+                width: 18px
+            }
+
+            .option span {
+                display: none
+            }
+
+            .row .options {
+                display: flex;
+                justify-content: space-between
+            }
+
+            .row .options .option {
+                margin-bottom: 5px
+            }
+
+            .option #fill-color {
+                height: 17px;
+                width: 17px
+            }
+
+            .tools-board .colors .option {
+                margin-bottom: 20px
+            }
+
+            .drawing-board {
+                height: 40vh
+            }
+        }
+    </style>
+    <script>
+        const canvas = document.querySelector("canvas"), toolBtns = document.querySelectorAll(".tool"), fillColor = document.querySelector("#fill-color"), sizeSlider = document.querySelector("#size-slider"), colorBtns = document.querySelectorAll(".colors .option"), colorPicker = document.querySelector("#color-picker"), clearCanvas = document.querySelector(".clear-canvas"), saveImg = document.querySelector(".save-img"), ctx = canvas.getContext("2d"); let prevMousePoint, snapshot, isDrawing = false, selectedTool = "brush", brushSize = 5, selectedColor = "#000"; const setCanvasBackground = () => { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = selectedColor; }
+        window.addEventListener("load", () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight - 7; ctx.lineCap = "round"; setCanvasBackground(); }); const currMousePoint = e => { let x = "ontouchstart" in window ? e.touches?.[0].pageX : e.offsetX; let y = "ontouchstart" in window ? e.touches?.[0].pageY : e.offsetY; return { x, y }; }
+        const drawRect = position => {
+            if (!fillColor.checked) { return ctx.strokeRect(position.x, position.y, prevMousePoint.x - position.x, prevMousePoint.y - position.y); }
+            ctx.fillRect(position.x, position.y, prevMousePoint.x - position.x, prevMousePoint.y - position.y);
+        }
+        const drawCircle = position => { ctx.beginPath(); let radius = Math.sqrt(Math.pow((prevMousePoint.x - position.x), 2) + Math.pow((prevMousePoint.y - position.y), 2)); ctx.arc(prevMousePoint.x, prevMousePoint.y, radius, 0, 2 * Math.PI); fillColor.checked ? ctx.fill() : ctx.stroke(); }
+        const drawTriangle = position => { ctx.beginPath(); ctx.moveTo(prevMousePoint.x, prevMousePoint.y); ctx.lineTo(position.x, position.y); ctx.lineTo(prevMousePoint.x * 2 - position.x, position.y); ctx.closePath(); fillColor.checked ? ctx.fill() : ctx.stroke(); }
+        const startDraw = e => { isDrawing = true; ctx.beginPath(); prevMousePoint = currMousePoint(e); ctx.lineWidth = brushSize; ctx.strokeStyle = selectedColor; ctx.fillStyle = selectedColor; snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height); }
+        const drawing = e => { if (!isDrawing) return; ctx.putImageData(snapshot, 0, 0); let position = currMousePoint(e); if (selectedTool === "brush" || selectedTool === "eraser") { ctx.strokeStyle = selectedTool === "eraser" ? "#fff" : selectedColor; ctx.lineTo(position.x, position.y); ctx.stroke(); } else if (selectedTool === "rect") { drawRect(position); } else if (selectedTool === "circle") { drawCircle(position); } else { drawTriangle(position); } }
+        toolBtns.forEach(btn => { btn.addEventListener("click", () => { document.querySelector(".options .active").classList.remove("active"); btn.classList.add("active"); selectedTool = btn.id; }); }); sizeSlider.addEventListener("change", () => brushSize = sizeSlider.value); colorBtns.forEach(btn => { btn.addEventListener("click", () => { document.querySelector(".colors .selected").classList.remove("selected"); btn.classList.add("selected"); selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color"); }); }); clearCanvas.addEventListener("click", () => { ctx.clearRect(0, 0, canvas.width, canvas.height); setCanvasBackground(); }); colorPicker.addEventListener("change", e => { colorPicker.parentElement.style.backgroundColor = e.target.value; colorPicker.parentElement.click(); }); saveImg.addEventListener("click", () => { const link = document.createElement("a"); link.download = `${Date.now()}.jpg`; link.href = canvas.toDataURL(); link.click(); }); canvas.addEventListener("mousedown", startDraw); canvas.addEventListener("touchstart", startDraw); canvas.addEventListener("mousemove", drawing); canvas.addEventListener("touchmove", drawing); canvas.addEventListener("mouseup", () => isDrawing = false); canvas.addEventListener("mouseleave", () => isDrawing = false); canvas.addEventListener("touchend", () => isDrawing = false);
+    </script>
+</body>
+
+</html>
